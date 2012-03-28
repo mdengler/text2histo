@@ -6,11 +6,14 @@ seq 1 15 | text2histo.py
 
 """
 
-import datetime, sys, os, math
+import math
+import optparse
+import os
+import sys
 
 
 if "--help" in sys.argv:
-    print __doc__
+    sys.stderr.print(__doc__)
     sys.exit(1)
 
 
