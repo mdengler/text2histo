@@ -1,10 +1,14 @@
 #!/usr/bin/env python
 """
-Example
+Takes lines of integers (or characters whose length is notable) and
+displays a histogram of the occurence frequencies of the integer (or
+of the length of the lines' characters).
+
+Examples
 
 $ text2histo.py 1 1 2 3 3 3 4 4 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5  5 6 6 6 7 8 8 9 12
    12 ..  10.8 | [ 1] #
- 10.8 ..   9.6 | [ 0] 
+ 10.8 ..   9.6 | [ 0]
   9.6 ..   8.4 | [ 1] #
   8.4 ..   7.2 | [ 2] ##
   7.2 ..   6.0 | [ 1] #
@@ -12,8 +16,15 @@ $ text2histo.py 1 1 2 3 3 3 4 4 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5  5 6 6 6 7 8 8
   4.8 ..   3.6 | [ 2] ##
   3.6 ..   2.4 | [ 3] ###
   2.4 ..   1.2 | [ 1] #
-  1.2 ..     1 | [ 0] 
+  1.2 ..     1 | [ 0]
 
+$ text2histo.py --bins=5 1 1 2 3 3 3 4 4 5 5 5 5 5 5 5 5 5 5 5 5 5
+ 5 5 5 5  5 6 6 6 7 8 8 9 12
+  12 ..  9.6 | [ 1] #
+ 9.6 ..  7.2 | [ 3] ###
+ 7.2 ..  4.8 | [22] ######################
+ 4.8 ..  2.4 | [ 5] #####
+ 2.4 ..    1 | [ 1] #
 
 """
 
@@ -52,6 +63,8 @@ def get_bin_contents(counts, bins=None):
 
     if bins is None:
         bins = min(20, len(counts.keys()))
+    else:
+        bins = int(bins) # in case it's a string
 
     bin_range = (max_c - min_c) + 1
     bin_increment = bin_range / math.ceil(float(bins))
@@ -100,6 +113,6 @@ if __name__ == "__main__":
 
     counts = get_counts(lines)
 
-    bin_contents = get_bin_contents(counts, bins=int(options.bins))
+    bin_contents = get_bin_contents(counts, bins=options.bins)
 
     print_histogram_bins(bin_contents)
