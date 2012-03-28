@@ -24,6 +24,28 @@ $ text2histo.py --bins=5 1 1 2 3 3 3 4 4 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5  5 6 
  7.2 ..  4.8 | [22] ######################
  4.8 ..  2.4 | [ 5] #####
  2.4 ..    1 | [ 3] ###
+
+
+$ head ~/src/stopwords.txt
+a
+about
+above
+across
+after
+again
+against
+all
+almost
+alone
+
+$ head ~/src/stopwords.txt | text2histo.py
+   7 ..  5.6 | [3] ###
+ 5.6 ..  4.2 | [5] #####
+ 4.2 ..  2.8 | [1] #
+ 2.8 ..  1.4 | [0] 
+ 1.4 ..    1 | [1] #
+
+
 """
 
 import math
