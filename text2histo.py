@@ -8,7 +8,7 @@ Examples
 
 $ text2histo.py 1 1 2 3 3 3 4 4 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5  5 6 6 6 7 8 8 9 12
    12 ..  10.8 | [ 1] #
- 10.8 ..   9.6 | [ 0] 
+ 10.8 ..   9.6 | [ 0]
   9.6 ..   8.4 | [ 1] #
   8.4 ..   7.2 | [ 2] ##
   7.2 ..   6.0 | [ 1] #
@@ -26,25 +26,32 @@ $ text2histo.py --bins=5 1 1 2 3 3 3 4 4 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5  5 6 
  2.4 ..    1 | [ 3] ###
 
 
-$ head ~/src/stopwords.txt
-a
-about
-above
-across
-after
-again
-against
-all
-almost
-alone
+$ text2histo.py  < ~/src/stopwords.txt
+   11 ..  10.0 | [ 2] #
+ 10.0 ..   9.0 | [ 5] ##
+  9.0 ..   8.0 | [12] ######
+  8.0 ..   7.0 | [18] #########
+  7.0 ..   6.0 | [47] #######################
+  6.0 ..   5.0 | [58] #############################
+  5.0 ..   4.0 | [86] ###########################################
+  4.0 ..   3.0 | [98] ##################################################
+  3.0 ..   2.0 | [53] ###########################
+  2.0 ..   1.0 | [24] ############
+  1.0 ..     1 | [26] #############
 
-$ head ~/src/stopwords.txt | text2histo.py
-   7 ..  5.6 | [3] ###
- 5.6 ..  4.2 | [5] #####
- 4.2 ..  2.8 | [1] #
- 2.8 ..  1.4 | [0] 
- 1.4 ..    1 | [1] #
 
+$ text2histo.py -w20  < ~/src/stopwords.txt
+   11 ..  10.0 | [ 2]
+ 10.0 ..   9.0 | [ 5] #
+  9.0 ..   8.0 | [12] ##
+  8.0 ..   7.0 | [18] ###
+  7.0 ..   6.0 | [47] #########
+  6.0 ..   5.0 | [58] ###########
+  5.0 ..   4.0 | [86] #################
+  4.0 ..   3.0 | [98] ####################
+  3.0 ..   2.0 | [53] ##########
+  2.0 ..   1.0 | [24] ####
+  1.0 ..     1 | [26] #####
 
 """
 
@@ -112,25 +119,34 @@ def get_bin_contents(counts, bins=None):
     return bin_contents
 
 
-def print_histogram_bins(bin_contents):
+def print_histogram_bins(bin_contents, max_bar_width=None):
+
+    if max_bar_width is not None:
+        width = int(max_bar_width)
+    else:
+        width = 50
+
+    width_normalizer = width / float(max([size for s, e, size in bin_contents]))
+
     bin_start_and_ends = reduce(lambda a, b: a + b,
                                 [[s, e] for s, e, size in bin_contents], [])
     bin_label_padding = max(map(len, map(str, bin_start_and_ends))) + 1
     size_padding = max([len(str(size)) for s, e, size in bin_contents])
-    format_str = "%%%ds .. %%%ds | [%%%ds] %%s\n" % (bin_label_padding,
-                                                     bin_label_padding,
-                                                     size_padding)
+    format_str = "%%%ds ..%%%ds | [%%%ds] %%s\n" % (bin_label_padding,
+                                                    bin_label_padding,
+                                                    size_padding)
 
     for bin_start, bin_end, size in bin_contents:
         sys.stdout.write(format_str % (bin_start,
                                        bin_end,
                                        size,
-                                       "#" * size))
+                                       "#" * int(size * width_normalizer)))
 
 if __name__ == "__main__":
 
     parser = optparse.OptionParser()
     parser.add_option("--bins", default=None)
+    parser.add_option("-w", "--max-bar-width", default=None)
     options, args = parser.parse_args()
 
     if (len(args) > 0) and ("-" not in args):
@@ -142,4 +158,4 @@ if __name__ == "__main__":
 
     bin_contents = get_bin_contents(counts, bins=options.bins)
 
-    print_histogram_bins(bin_contents)
+    print_histogram_bins(bin_contents, max_bar_width=options.max_bar_width)
