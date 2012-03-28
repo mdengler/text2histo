@@ -45,12 +45,14 @@ def get_counts(lines):
     return counts
 
 
-def get_bin_contents(counts):
+def get_bin_contents(counts, bins=None):
     """returns a list of bin_start, bin_end, size lists"""
     max_c = max(counts.keys())
     min_c = min(counts.keys())
 
-    bins = min(20, len(counts.keys()))
+    if bins is None:
+        bins = min(20, len(counts.keys()))
+
     bin_range = (max_c - min_c) + 1
     bin_increment = bin_range / math.ceil(float(bins))
 
@@ -87,15 +89,17 @@ def print_histogram_bins(bin_contents):
 
 if __name__ == "__main__":
 
-    if "--help" in sys.argv:
-        sys.stderr.write(__doc__)
-        sys.exit(1)
+    parser = optparse.OptionParser()
+    parser.add_option("--bins", default=None)
+    options, args = parser.parse_args()
 
-    if len(sys.argv[1:]) > 1:
-        lines = sys.argv[1:]
+    if (len(args) > 0) and ("-" not in args):
+        lines = args
     else:
         lines = sys.stdin.readlines()
 
     counts = get_counts(lines)
-    bin_contents = get_bin_contents(counts)
+
+    bin_contents = get_bin_contents(counts, bins=int(options.bins))
+
     print_histogram_bins(bin_contents)
