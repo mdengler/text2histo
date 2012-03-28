@@ -73,12 +73,19 @@ def get_bin_contents(counts, bins=None):
 
     bin_contents = []
     for i in range(bins):
-        if i == bins - 1:
+
+        last_bin = i == bins - 1
+
+        if last_bin:
             bin_end = min_c
         else:
             bin_end = bin_start - bin_increment
+
         size = sum([counts[c] for c in counts
-                    if (c <= bin_start) and (c > bin_end)])
+                    if ((c <= bin_start)
+                        and
+                        ((c > bin_end) or (last_bin and c == bin_end)))])
+
         bin_contents.append([bin_start, bin_end, size])
         bin_start = bin_end
 
