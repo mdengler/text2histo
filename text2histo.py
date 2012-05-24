@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 """
 Takes lines of integers (or characters whose length is notable) and
 displays a histogram of the occurence frequencies of the integer (or
