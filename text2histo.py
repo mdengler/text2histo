@@ -53,6 +53,45 @@ $ text2histo.py -w20  < ~/src/stopwords.txt
   2.0 ..   1.0 | [24] ####
   1.0 ..     1 | [26] #####
 
+$ text2histo.py -w20 --raw < ~/src/stopwords.txt
+11,10.0,2
+10.0,9.0,5
+9.0,8.0,12
+8.0,7.0,18
+7.0,6.0,47
+6.0,5.0,58
+5.0,4.0,86
+4.0,3.0,98
+3.0,2.0,53
+2.0,1.0,24
+1.0,1,26
+
+$ text2histo.py -w20 --raw < ~/src/stopwords.txt | cut -d, -f 1,3 | ~/bin/scatter.py --bars
+ 19|
+   |
+ 17|
+   |
+ 15|
+   |
+ 13|
+   |
+ 11|
+   |
+  9|
+   |
+  7|
+   |
+  5|
+   |
+  3|
+   |
+  1| 1111111111
+   | ⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅
+  0|1⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅
+   +----------------------------------------
+        0         9        19        29        39
+
+
 """
 
 import math
@@ -146,6 +185,8 @@ if __name__ == "__main__":
 
     parser = optparse.OptionParser()
     parser.add_option("--bins", default=None)
+    parser.add_option("-r", "--raw", action="store_true",
+                      help="print raw scatter-plot-suitable data")
     parser.add_option("-w", "--max-bar-width", default=None)
     options, args = parser.parse_args()
 
@@ -158,4 +199,8 @@ if __name__ == "__main__":
 
     bin_contents = get_bin_contents(counts, bins=options.bins)
 
-    print_histogram_bins(bin_contents, max_bar_width=options.max_bar_width)
+    if options.raw:
+        for bin_high, bin_low, bin_value in bin_contents: #destructure for clarity
+            print ",".join(map(str, (bin_high, bin_low, bin_value)))
+    else:
+        print_histogram_bins(bin_contents, max_bar_width=options.max_bar_width)
